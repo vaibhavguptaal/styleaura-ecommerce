@@ -1,0 +1,126 @@
+{
+  "project_name": "StyleAura Fashion",
+  "theme": "light",
+  "archetype": "Luxury / Organic & Earthy (Warm Minimalist)",
+  "design_philosophy": "A premium, mobile-first boutique experience for Indian women's fashion. Combines the approachability of organic/earthy tones with the editorial elegance of luxury design. Interfaces must feel tactile, warm, and sophisticated. The design relies heavily on beautiful serif typography, generous negative space, and a muted, earthy color palette. Since no real photos are used, typography and color blocking are the heroes of the visual experience.",
+  "colors": {
+    "background": "#FAFAF7",
+    "surface": "#F3F1EB",
+    "surface_hover": "#EAE7DF",
+    "primary": "#843831",
+    "primary_hover": "#6B2C26",
+    "secondary": "#E8DCCB",
+    "text_main": "#2B2927",
+    "text_muted": "#75716C",
+    "border_subtle": "#E5E1D8",
+    "border_strong": "#D1CBBF",
+    "accent_gold": "#C5A059",
+    "whatsapp_green": "#25D366",
+    "whatsapp_green_hover": "#1EBE5D",
+    "sale_tag": "#A65A4B"
+  },
+  "typography": {
+    "fonts": {
+      "heading": "Cormorant Garamond, serif",
+      "body": "Manrope, sans-serif",
+      "imports": "@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Manrope:wght@300;400;500;600&display=swap');"
+    },
+    "hierarchy": {
+      "h1": "font-heading text-4xl sm:text-5xl lg:text-6xl tracking-tight text-text_main font-medium",
+      "h2": "font-heading text-2xl sm:text-3xl lg:text-4xl tracking-tight text-text_main font-medium",
+      "h3": "font-heading text-xl sm:text-2xl text-text_main font-medium",
+      "h4": "font-body text-lg sm:text-xl text-text_main font-medium tracking-wide",
+      "body": "font-body text-base text-text_muted leading-relaxed",
+      "body_small": "font-body text-sm text-text_muted",
+      "overline": "font-body text-xs uppercase tracking-[0.2em] text-accent_gold font-semibold"
+    }
+  },
+  "layout_and_spacing": {
+    "general": "Mobile-first approach. Heavy use of padding to create an editorial, airy feel. Avoid tight, cluttered rows.",
+    "containers": "Use max-w-7xl mx-auto px-4 sm:px-6 lg:px-8.",
+    "section_spacing": "py-16 md:py-24",
+    "grid_patterns": {
+      "product_grid": "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8",
+      "bento_features": "grid grid-cols-1 md:grid-cols-8 lg:grid-cols-12 gap-4 md:gap-8",
+      "lookbook_asymmetric": "grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 (Use col-span-8 for main, col-span-4 for secondary)"
+    }
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-primary text-white font-body text-sm uppercase tracking-widest px-8 py-4 rounded-sm transition-colors duration-300 hover:bg-primary_hover flex items-center justify-center gap-2",
+      "secondary": "bg-transparent border border-border_strong text-text_main font-body text-sm uppercase tracking-widest px-8 py-4 rounded-sm transition-colors duration-300 hover:bg-surface_hover flex items-center justify-center gap-2",
+      "whatsapp": "bg-[#25D366] text-white font-body font-medium px-6 py-3 rounded-full shadow-lg transition-transform duration-300 hover:-translate-y-1 flex items-center gap-2"
+    },
+    "product_card": {
+      "wrapper": "group relative flex flex-col gap-3 cursor-pointer",
+      "image_container": "relative aspect-[3/4] w-full overflow-hidden rounded-sm bg-surface",
+      "info_container": "flex flex-col gap-1",
+      "title": "font-heading text-lg lg:text-xl text-text_main line-clamp-1",
+      "price_wrapper": "flex items-center gap-2",
+      "price_current": "font-body font-medium text-primary",
+      "price_old": "font-body text-sm text-text_muted line-through",
+      "action": "mt-2 w-full py-2 border border-border_subtle text-xs uppercase tracking-wider text-center transition-all duration-300 group-hover:bg-primary group-hover:text-white group-hover:border-primary"
+    },
+    "product_detail": {
+      "gallery_area": "w-full md:w-1/2 flex flex-col gap-4",
+      "info_area": "w-full md:w-1/2 flex flex-col gap-6 md:pl-8",
+      "size_selector": "flex gap-3",
+      "size_pill": "w-10 h-10 border border-border_strong flex items-center justify-center font-body text-sm cursor-pointer transition-colors hover:border-primary data-[selected=true]:bg-primary data-[selected=true]:text-white"
+    },
+    "navigation": {
+      "header": "fixed top-0 w-full z-50 bg-background/90 backdrop-blur-md border-b border-border_subtle transition-all duration-300",
+      "logo": "font-heading text-2xl lg:text-3xl font-medium tracking-tight text-primary",
+      "mobile_menu": "Sheet component from Shadcn customized with background color #FAFAF7"
+    },
+    "admin_dashboard": {
+      "layout": "Grid-based with sidebar navigation. Dense data tables.",
+      "style": "Clean, flat cards with 1px border. No heavy drop shadows. High contrast text.",
+      "components": "Use customized Shadcn UI tables, inputs, forms, tabs."
+    }
+  },
+  "media_and_images": {
+    "CRITICAL_RULE": "ABSOLUTELY NO EXTERNAL IMAGES OR PLACEHOLDER URLS (no via.placeholder.com, unsplash, etc.). Use pure CSS colored divs with elegant text inside them for all visual assets.",
+    "hero_placeholder": {
+      "class": "w-full min-h-[70vh] bg-secondary relative flex items-center justify-center overflow-hidden",
+      "visuals": "Add a subtle CSS radial gradient or repeating linear gradient to add texture. Example: background-image: radial-gradient(circle at center, #F3F1EB 0%, #E8DCCB 100%);",
+      "content": "Overlay an elegant text arrangement: an 'overline' (NEW COLLECTION), a massive 'h1' (Timeless Elegance), and buttons."
+    },
+    "product_placeholder": {
+      "class": "w-full h-full absolute inset-0 flex items-center justify-center p-4 text-center",
+      "backgrounds": "Rotate through subtle classes: bg-[#EFECE5], bg-[#F2EBDE], bg-[#EBE5E0], bg-[#E5E7E1]",
+      "text": "Display the category or a stylized monogram using the 'font-heading' font, colored with text-text_muted/50 text-2xl."
+    },
+    "category_placeholder": {
+      "class": "w-full aspect-square md:aspect-[4/5] bg-surface relative flex items-end p-6 border border-border_subtle transition-colors hover:border-primary",
+      "text": "font-heading text-2xl z-10 relative text-text_main"
+    }
+  },
+  "icons": {
+    "library": "lucide-react",
+    "stroke_width": "1.5",
+    "style": "Elegant, thin, lightweight to match the luxury aesthetic."
+  },
+  "testing": {
+    "data_testid_requirement": "All interactive elements MUST have a data-testid attribute. Use kebab-case and role-based naming.",
+    "examples": [
+      "data-testid='nav-link-shop'",
+      "data-testid='btn-add-to-wishlist'",
+      "data-testid='btn-whatsapp-order'",
+      "data-testid='product-card-1'",
+      "data-testid='size-selector-m'",
+      "data-testid='mobile-menu-trigger'"
+    ]
+  },
+  "instructions_to_main_agent": [
+    "1. Setup Tailwind configuration mapping to the exact HEX codes provided in the 'colors' section. Do not use default tailwind slate/gray.",
+    "2. Add Google Fonts import for Cormorant Garamond and Manrope in the global index.css file.",
+    "3. Apply 'bg-background text-text_main font-body' to the main html/body tag.",
+    "4. Construct the Product Listing and Product Detail pages using local hardcoded arrays (e.g., const products = [...]) that contain simulated data (title, price, category, etc.).",
+    "5. When rendering products, heroes, and categories, use ONLY pure HTML/CSS DIV placeholders exactly as specified in the 'media_and_images' section. DO NOT under any circumstances use <img> tags with external generic placeholder URLs.",
+    "6. Build a persistent wishlist using localStorage. Include a toggleable heart icon on the Product Detail and Product Card components.",
+    "7. Implement the floating WhatsApp CTA button fixed at bottom-right, styled elegantly with the customized whatsapp_green color.",
+    "8. The admin dashboard should simulate JWT login state (hardcoded user/pass check) and provide a basic CRUD table view for products with Shadcn components customized to match the brand colors.",
+    "9. Build mobile-first. Ensure the navigation turns into a hamburger menu on small screens, and product grids scale from 2 columns on mobile to 4 on desktop.",
+    "10. Ensure EVERY button, input, tab, and clickable card receives an appropriate data-testid attribute for automated testing."
+  ]
+}
