@@ -110,16 +110,22 @@ export default function Shop({ heading = "The Collection", initial = {} }) {
     if (price[1] < 5000) q.set("max_price", String(price[1]));
     if (initial.best_seller) q.set("best_seller", "true");
     if (initial.new_arrival) q.set("new_arrival", "true");
+    q.set("page", String(page));
+    q.set("page_size", "12");
     return q.toString();
-  }, [category, size, price, sort, search, initial]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [category, size, price, sort, search, initial, page]);
 
-  useEffect(() => {
-    setLoading(true);
+  const load = React.useCallback(() => {
+    setLoading(true); setError(null);
     api.get(`/products?${query}`).then((r) => {
-      setProducts(r.data);
-      setLoading(false);
-    }).catch(() => setLoading(false));
+      setProducts(r.data.items || []);
+      setTotalPages(r.data.total_pages || 1);
+    }).catch(() => setError("error"))
+      .finally(() => setLoading(false));
   }, [query]);
+  useEffect(() => { load(); }, [load]);
+  useEffect(() => { setPage(1); }, [category, size, price, sort, search]);
 
   useEffect(() => {
     setSearch(params.get("search") || "");
@@ -160,15 +166,33 @@ export default function Shop({ heading = "The Collection", initial = {} }) {
 
         <div>
           {loading ? (
-            <div className="text-sm text-smoke py-20 text-center">Loading pieces…</div>
+            <div className="text-sm text-smoke py-20 text-center" data-testid="shop-loading">Loading pieces…</div>
+          ) : error ? (
+            <div className="py-20 text-center border border-dashed border-hairlineStrong" data-testid="shop-error">
+              <p className="text-smoke mb-4">Couldn't load products.</p>
+              <button onClick={load} className="bg-rust text-ivory px-6 py-3 text-xs uppercase tracking-[0.24em]" data-testid="shop-retry">Retry</button>
+            </div>
           ) : products.length === 0 ? (
-            <div className="text-sm text-smoke py-20 text-center border border-dashed border-hairlineStrong">
+            <div className="text-sm text-smoke py-20 text-center border border-dashed border-hairlineStrong" data-testid="shop-empty">
               No products match these filters yet.
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8">
-              {products.map((p, i) => <ProductCard key={p.id} product={p} index={i} />)}
-            </div>
+            <>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8">
+                {products.map((p) => <ProductCard key={p.id} product={p} />)}
+              </div>
+              {totalPages > 1 && (
+                <div className="flex items-center justify-center gap-2 mt-10" data-testid="shop-pagination">
+                  <button disabled={page <= 1} onClick={() => setPage((p) => p - 1)}
+                          className="px-4 py-2 border border-hairlineStrong text-xs uppercase tracking-[0.2em] disabled:opacity-40"
+                          data-testid="shop-page-prev">Prev</button>
+                  <span className="text-sm text-smoke px-3">{page} / {totalPages}</span>
+                  <button disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}
+                          className="px-4 py-2 border border-hairlineStrong text-xs uppercase tracking-[0.2em] disabled:opacity-40"
+                          data-testid="shop-page-next">Next</button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>

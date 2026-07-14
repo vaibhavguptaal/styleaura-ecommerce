@@ -19,6 +19,7 @@ import Wishlist from "./pages/Wishlist";
 import Policy from "./pages/Policy";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
+import NotFound from "./pages/NotFound";
 
 function App() {
   return (
@@ -40,7 +41,7 @@ function App() {
               <Route path="/policy/:slug" element={<Policy />} />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin" element={<AdminDashboard />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
+              <Route path="*" element={<NotFound />} />
             </Route>
           </Routes>
         </BrowserRouter>

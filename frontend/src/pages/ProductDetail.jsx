@@ -14,15 +14,19 @@ export default function ProductDetail() {
   const [related, setRelated] = useState([]);
   const [size, setSize] = useState("");
   const [color, setColor] = useState("");
+  const [quantity, setQuantity] = useState(1);
   const [gallery, setGallery] = useState(0);
+  const [imgOk, setImgOk] = useState(true);
+  const [error, setError] = useState(null);
   const { has, toggle } = useWishlist();
 
-  useEffect(() => {
-    setProduct(null);
+  const load = React.useCallback(() => {
+    setProduct(null); setError(null); setImgOk(true);
     api.get(`/products/${id}`).then((r) => {
       setProduct(r.data);
       setSize(r.data.sizes?.[0] || "");
       setColor(r.data.colors?.[0] || "");
+      setQuantity(1);
       api.get(`/products?category=${encodeURIComponent(r.data.category)}`).then((rr) => {
         setRelated(rr.data.filter((p) => p.id !== r.data.id).slice(0, 4));
       });
@@ -41,23 +45,25 @@ export default function ProductDetail() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16">
         {/* Gallery */}
         <div className="flex flex-col gap-4">
-          <div className="relative aspect-[3/4] w-full bg-linen">
-            <ProductPlaceholder label={product.name} subLabel={product.category} />
+          <div className="relative aspect-[3/4] w-full bg-linen overflow-hidden">
+            {heroImg && imgOk ? (
+              <img src={heroImg} alt={product.name} onError={() => setImgOk(false)}
+                   className="absolute inset-0 w-full h-full object-cover" />
+            ) : (
+              <ProductPlaceholder label={product.name} subLabel={product.category} />
+            )}
           </div>
-          <div className="grid grid-cols-4 gap-3">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setGallery(i)}
-                data-testid={`gallery-thumb-${i}`}
-                className={`relative aspect-square bg-linen border transition-colors ${
-                  gallery === i ? "border-rust" : "border-hairline"
-                }`}
-              >
-                <ProductPlaceholder label={product.name} subLabel={`View ${i + 1}`} />
-              </button>
-            ))}
-          </div>
+          {product.image_urls?.length > 1 && (
+            <div className="grid grid-cols-4 gap-3">
+              {product.image_urls.slice(0, 4).map((u, i) => (
+                <button key={i} onClick={() => { setGallery(i); setImgOk(true); }}
+                        data-testid={`gallery-thumb-${i}`}
+                        className={`relative aspect-square bg-linen border overflow-hidden ${gallery === i ? "border-rust" : "border-hairline"}`}>
+                  <img src={u} alt="" className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Info */}

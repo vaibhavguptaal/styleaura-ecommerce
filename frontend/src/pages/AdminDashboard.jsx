@@ -20,6 +20,7 @@ const EMPTY = {
 function ProductForm({ initial, onSubmit, onClose }) {
   const [f, setF] = useState({ ...EMPTY, ...(initial || {}), discount_price: initial?.discount_price ?? "" });
   const [colorsText, setColorsText] = useState((initial?.colors || []).join(", "));
+  const [imagesText, setImagesText] = useState((initial?.image_urls || []).join("\n"));
   const [busy, setBusy] = useState(false);
 
   const upd = (k, v) => setF((s) => ({ ...s, [k]: v }));
@@ -38,7 +39,11 @@ function ProductForm({ initial, onSubmit, onClose }) {
         ...f,
         price: Number(f.price) || 0,
         discount_price: f.discount_price === "" || f.discount_price == null ? null : Number(f.discount_price),
+        stock_quantity: Number(f.stock_quantity) || 0,
+        thumbnail_url: (f.thumbnail_url || "").trim() || null,
+        image_urls: imagesText.split(/[\n,]/).map(u => u.trim()).filter(Boolean),
         colors: colorsText.split(",").map(c => c.trim()).filter(Boolean),
+        sku: (f.sku || "").trim() || null,
       };
       await onSubmit(payload);
     } finally {
@@ -93,10 +98,38 @@ function ProductForm({ initial, onSubmit, onClose }) {
         <textarea data-testid="admin-form-description" value={f.description} onChange={(e) => upd("description", e.target.value)} rows={3}
                   className="w-full border border-hairlineStrong px-3 py-2 text-sm outline-none focus:border-rust resize-none" />
       </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="text-xs uppercase tracking-[0.18em] mb-1 block">Fabric</label>
+          <input data-testid="admin-form-fabric" value={f.fabric} onChange={(e) => upd("fabric", e.target.value)}
+                 className="w-full border border-hairlineStrong px-3 py-2 text-sm outline-none focus:border-rust" />
+        </div>
+        <div>
+          <label className="text-xs uppercase tracking-[0.18em] mb-1 block">SKU</label>
+          <input data-testid="admin-form-sku" value={f.sku || ""} onChange={(e) => upd("sku", e.target.value)}
+                 placeholder="SA-KUR-001"
+                 className="w-full border border-hairlineStrong px-3 py-2 text-sm outline-none focus:border-rust" />
+        </div>
+      </div>
       <div>
-        <label className="text-xs uppercase tracking-[0.18em] mb-1 block">Fabric</label>
-        <input data-testid="admin-form-fabric" value={f.fabric} onChange={(e) => upd("fabric", e.target.value)}
+        <label className="text-xs uppercase tracking-[0.18em] mb-1 block">Stock Quantity</label>
+        <input data-testid="admin-form-stock-qty" type="number" min="0"
+               value={f.stock_quantity} onChange={(e) => upd("stock_quantity", e.target.value)}
                className="w-full border border-hairlineStrong px-3 py-2 text-sm outline-none focus:border-rust" />
+      </div>
+      <div>
+        <label className="text-xs uppercase tracking-[0.18em] mb-1 block">Thumbnail Image URL</label>
+        <input data-testid="admin-form-thumbnail" value={f.thumbnail_url || ""}
+               onChange={(e) => upd("thumbnail_url", e.target.value)}
+               placeholder="https://..."
+               className="w-full border border-hairlineStrong px-3 py-2 text-sm outline-none focus:border-rust" />
+      </div>
+      <div>
+        <label className="text-xs uppercase tracking-[0.18em] mb-1 block">Additional Image URLs (one per line)</label>
+        <textarea data-testid="admin-form-images" value={imagesText} onChange={(e) => setImagesText(e.target.value)}
+                  rows={3}
+                  placeholder="https://... (one per line)"
+                  className="w-full border border-hairlineStrong px-3 py-2 text-sm outline-none focus:border-rust resize-none" />
       </div>
       <div>
         <label className="text-xs uppercase tracking-[0.18em] mb-1 block">Sizes</label>
@@ -155,8 +188,12 @@ export default function AdminDashboard() {
   const [tab, setTab] = useState("products");
   const [enquiries, setEnquiries] = useState([]);
 
-  const load = () => api.get("/products?sort=new").then((r) => setProducts(r.data));
-  const loadEnquiries = () => api.get("/enquiries").then((r) => setEnquiries(r.data)).catch(() => {});
+  const load = () => api.get("/products?sort=new&page_size=60").then((r) => setProducts(r.data.items || []));
+  const loadEnquiries = () => api.get("/enquiries?page_size=100").then((r) => setEnquiries(r.data.items || [])).catch(() => {});
+  const updateEnquiryStatus = async (id, status) => {
+    try { await api.patch(`/enquiries/${id}`, { status }); toast.success("Enquiry updated"); loadEnquiries(); }
+    catch (e) { toast.error(formatApiErrorDetail(e.response?.data?.detail)); }
+  };
 
   useEffect(() => {
     if (user && user.role === "admin") { load(); loadEnquiries(); }
@@ -304,12 +341,13 @@ export default function AdminDashboard() {
                 <th className="text-left px-4 py-3">Product</th>
                 <th className="text-left px-4 py-3">Size</th>
                 <th className="text-left px-4 py-3">Message</th>
+                <th className="text-left px-4 py-3">Status</th>
                 <th className="text-left px-4 py-3">Received</th>
               </tr>
             </thead>
             <tbody>
               {enquiries.length === 0 && (
-                <tr><td colSpan={6} className="text-center py-12 text-smoke">No enquiries yet.</td></tr>
+                <tr><td colSpan={7} className="text-center py-12 text-smoke">No enquiries yet.</td></tr>
               )}
               {enquiries.map((q) => (
                 <tr key={q.id} className="border-t border-hairline align-top">
@@ -318,6 +356,15 @@ export default function AdminDashboard() {
                   <td className="px-4 py-3 text-smoke">{q.product_name || "—"}</td>
                   <td className="px-4 py-3 text-smoke">{q.size || "—"}</td>
                   <td className="px-4 py-3 text-smoke max-w-sm">{q.message || "—"}</td>
+                  <td className="px-4 py-3">
+                    <select data-testid={`enquiry-status-${q.id}`} value={q.status || "new"}
+                            onChange={(e) => updateEnquiryStatus(q.id, e.target.value)}
+                            className="border border-hairlineStrong bg-ivory px-2 py-1 text-xs">
+                      <option value="new">New</option>
+                      <option value="contacted">Contacted</option>
+                      <option value="closed">Closed</option>
+                    </select>
+                  </td>
                   <td className="px-4 py-3 text-xs text-smoke">{q.created_at?.slice(0, 10)}</td>
                 </tr>
               ))}

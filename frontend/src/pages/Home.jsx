@@ -12,8 +12,8 @@ export default function Home() {
   const [bestSellers, setBestSellers] = useState([]);
 
   useEffect(() => {
-    api.get("/products?new_arrival=true").then((r) => setNewArrivals(r.data.slice(0, 4)));
-    api.get("/products?best_seller=true").then((r) => setBestSellers(r.data.slice(0, 4)));
+    api.get("/products?new_arrival=true&page_size=4").then((r) => setNewArrivals(r.data.items || []));
+    api.get("/products?best_seller=true&page_size=4").then((r) => setBestSellers(r.data.items || []));
   }, []);
 
   return (
